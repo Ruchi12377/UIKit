@@ -36,7 +36,7 @@ namespace UIKit
                 }
                 catch (Exception e)
                 {
-                    Debug.Log(e);
+                    Debug.LogError(e);
                 }
                 return false;
             }
@@ -47,7 +47,7 @@ namespace UIKit
             }
             catch(Exception e)
             {
-                Debug.Log(e);
+                Debug.LogError(e);
             }
 
             return false;
@@ -61,7 +61,7 @@ namespace UIKit
             }
             catch (Exception e)
             {
-                Debug.Log(e);
+                Debug.LogError(e);
             }
 
             return false;
@@ -77,7 +77,7 @@ namespace UIKit
                 }
                 catch(Exception e)
                 {
-                    Debug.Log(e);
+                    Debug.LogError(e);
                 }
                 return false;
             }
@@ -105,7 +105,7 @@ namespace UIKit
                 }
                 catch (Exception e)
                 {
-                    Debug.Log(e);
+                    Debug.LogError(e);
                 }
                 return false;
             }
@@ -129,7 +129,7 @@ namespace UIKit
                 }
                 catch (Exception e)
                 {
-                    Debug.Log(e);
+                    Debug.LogError(e);
                 }
                 return false;
             }
