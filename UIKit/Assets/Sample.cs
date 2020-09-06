@@ -5,6 +5,6 @@ public class Sample : MonoBehaviour
 {
     private void Start()
     {
-        Creator.CreateImage(UIKitManager.Instance.Stock.DynamicCanvas.canvas, "Sample");
+        Creator.CreateImage(UIKitManager.Stock.DynamicCanvas.canvas, "Sample");
     }
 }

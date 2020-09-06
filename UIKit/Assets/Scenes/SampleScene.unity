@@ -368,9 +368,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb2a62c90f82f42429a1bea9c298dd83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UseCreatedCanvas: 0
+  SetOrCreateCanvas: 0
+  UseCreatedDynamicCanvas: 0
+  UseCreatedStaticCanvas: 0
+  UseCreatedOtherCanvas: 0
   DynamicCanvas: {fileID: 0}
   StaticCanvas: {fileID: 0}
+  OtherCanvas: []
 --- !u!4 &963590963
 Transform:
   m_ObjectHideFlags: 0

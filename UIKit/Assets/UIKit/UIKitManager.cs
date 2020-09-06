@@ -25,7 +25,7 @@ namespace UIKit
         public Canvas StaticCanvas = null;
         public List<Canvas> OtherCanvas = new List<Canvas>();
 
-        public CanvasStock Stock { get; private set; }
+        public static CanvasStock Stock { get; private set; }
 
         private void Awake()
         {
