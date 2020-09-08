@@ -28,12 +28,6 @@ namespace UIKit
             return co;
         }
 
-        public enum CanvasType
-        {
-            Dymanic,
-            Static
-        };
-
         public static EventSystemObject CreateEventSystem()
         {
             GameObject go = new GameObject();
@@ -57,26 +51,43 @@ namespace UIKit
 
         public static Image CreateImage(Canvas canvas, string name)
         {
-            GameObject go = CreateUIbject(canvas, name);
-            go.transform.localPosition = Vector3.zero;
-            Image img = go == null ? null : go.AddComponent<Image>();
+            Image img;
+            try
+            {
+                GameObject go = CreateUIbject(canvas, name);
+                go.transform.localPosition = Vector3.zero;
+                img = go == null ? null : go.AddComponent<Image>();
+            }
+            catch
+            {
+                return null;
+            }
             return img;
         }
 
         public static Button CreateButton(Canvas canvas, string name)
         {
-            Image img = CreateImage(canvas, name);
-            img.rectTransform.sizeDelta = new Vector2(160, 30);
-            img.sprite = UISprite;
-            img.type = Image.Type.Sliced;
-            Button button = img.gameObject.AddComponent<Button>();
-            Text text = CreateText(canvas, "Text");
-            text.text = "Button";
-            text.transform.SetParent(img.transform);
-            text.rectTransform.anchorMin = Vector2.zero;
-            text.rectTransform.anchorMax = Vector2.one;
-            text.rectTransform.anchoredPosition = Vector3.zero;
-            text.rectTransform.sizeDelta = Vector2.zero;
+            Button button = null;
+            try
+            {
+                Image img = CreateImage(canvas, name);
+                img.rectTransform.sizeDelta = new Vector2(160, 30);
+                img.sprite = UISprite;
+                img.type = Image.Type.Sliced;
+                button = img.gameObject.AddComponent<Button>();
+                Text text = CreateText(canvas, "Text");
+                text.text = "Button";
+                text.transform.SetParent(img.transform);
+                text.rectTransform.anchorMin = Vector2.zero;
+                text.rectTransform.anchorMax = Vector2.one;
+                text.rectTransform.anchoredPosition = Vector3.zero;
+                text.rectTransform.sizeDelta = Vector2.zero;
+            }
+            catch(Exception e)
+            {
+                Debug.LogError(e);
+            }
+            
             return button;
         }
 

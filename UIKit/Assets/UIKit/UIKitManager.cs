@@ -48,20 +48,20 @@ namespace UIKit
             CanvasObject dynamicCanvas = default;
             CanvasObject staticCanvas = default;
             //オリジナルCanvas
-            List<CanvasObject> otherCanvas = new List<CanvasObject>();
+            List<CanvasObject> otherCanvas = new List<CanvasObject>(OtherCanvas.Count);
 
             //Canvas初期化
             //作成済みのDynamicCanvasを使う場合
             if (UseCreatedDynamicCanvas && (SetOrCreateCanvas == SetOrCreateCanvasType.Dynamic || SetOrCreateCanvas == SetOrCreateCanvasType.Both))
                 dynamicCanvas = CreateOnlyCanvas(DynamicCanvas);
             else if (SetOrCreateCanvas == SetOrCreateCanvasType.Dynamic || SetOrCreateCanvas == SetOrCreateCanvasType.Both)
-                dynamicCanvas = CreateOnlyCanvas(Creator.CanvasType.Dymanic, "Dynamic");
+                dynamicCanvas = CreateOnlyCanvas(CanvasType.Dymanic, "Dynamic");
 
             //作成済みのStaticCanvasを使う場合
             if (UseCreatedStaticCanvas && (SetOrCreateCanvas == SetOrCreateCanvasType.Static || SetOrCreateCanvas == SetOrCreateCanvasType.Both))
                 staticCanvas = CreateOnlyCanvas(StaticCanvas);
             else if (SetOrCreateCanvas == SetOrCreateCanvasType.Static || SetOrCreateCanvas == SetOrCreateCanvasType.Both)
-                staticCanvas = CreateOnlyCanvas(Creator.CanvasType.Static, "Static");
+                staticCanvas = CreateOnlyCanvas(CanvasType.Static, "Static");
 
             //オリジナルCanvas初期化
             //作成済みのOtherCanvasを使う場合
@@ -76,7 +76,7 @@ namespace UIKit
             {
                 foreach (var _ in OtherCanvas.Select((Value, Index) => new { Value, Index }))
                 {
-                    otherCanvas[_.Index] = CreateOnlyCanvas(Creator.CanvasType.Dymanic, _.Value.transform.name);
+                    otherCanvas[_.Index] = CreateOnlyCanvas(CanvasType.Dymanic, _.Value.transform.name);
                 }
             }
             //Stockに代入
@@ -92,7 +92,7 @@ namespace UIKit
             return canvasObject;
         }
 
-        private static CanvasObject CreateOnlyCanvas(Creator.CanvasType type, string name)
+        private static CanvasObject CreateOnlyCanvas(CanvasType type, string name)
         {
             CanvasObject canvasObject = new CanvasObject();
             canvasObject.Init(type, name);
@@ -106,7 +106,7 @@ namespace UIKit
             return canvasObject;
         }
 
-        public static CanvasObject CreateCanvas(Creator.CanvasType type, string name)
+        public static CanvasObject CreateCanvas(CanvasType type, string name)
         {
             CanvasObject canvasObject = new CanvasObject();
             canvasObject.Init(type, name);

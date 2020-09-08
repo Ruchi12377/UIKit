@@ -20,7 +20,7 @@ namespace UIKit
         }
 
         //Canvasの生成&代入
-        public void Init(Creator.CanvasType type, string name)
+        public void Init(CanvasType type, string name)
         {
             this = Creator.CreateCanvas(type, name);
         }
@@ -28,12 +28,20 @@ namespace UIKit
         //Canvasの代入
         public void Init(Canvas canvas)
         {
-            CanvasObject co = new CanvasObject
+            CanvasObject co = default;
+            try
             {
-                canvas = canvas,
-                canvasScaler = canvas.gameObject.GetComponent<CanvasScaler>(),
-                graphicRaycaster = canvas.gameObject.GetComponent<GraphicRaycaster>()
-            };
+                co = new CanvasObject
+                {
+                    canvas = canvas,
+                    canvasScaler = canvas.gameObject.GetComponent<CanvasScaler>(),
+                    graphicRaycaster = canvas.gameObject.GetComponent<GraphicRaycaster>()
+                };
+            }
+            catch
+            {
+                this = default;
+            }
             this = co;
         }
     }
@@ -138,12 +146,19 @@ namespace UIKit
             OtherCanvas.Add(canvasObject);
         }
 
-        public CanvasObject AddCanvas(Creator.CanvasType type, string name)
+        public CanvasObject AddCanvas(CanvasType type, string name)
         {
             CanvasObject co = Creator.CreateCanvas(type, name);
             OtherCanvas.Add(co);
             return co;
         }
+    }
+
+    [Serializable]
+    public struct Childs
+    {
+        public int Nest;
+        public Transform transform;
     }
 
     public enum CanvasType
