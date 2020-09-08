@@ -34,7 +34,7 @@ namespace UIKit
             EventSystem es = go?.GetComponent<EventSystem>();
             EventSystemObject eventSystemObject = new EventSystemObject(es, null);
             //EventStyleがないなら
-            if(eventSystemObject.eventSystem == null)
+            if (eventSystemObject.eventSystem == null)
             {
                 //EventSystem初期化
                 eventSystemObject.Init();
@@ -53,15 +53,15 @@ namespace UIKit
             //Canvas初期化
             //作成済みのDynamicCanvasを使う場合
             if (UseCreatedDynamicCanvas && (SetOrCreateCanvas == SetOrCreateCanvasType.Dynamic || SetOrCreateCanvas == SetOrCreateCanvasType.Both))
-                dynamicCanvas = CreateOnlyCanvas(DynamicCanvas);
+                dynamicCanvas = CanvasObjectInit(DynamicCanvas);
             else if (SetOrCreateCanvas == SetOrCreateCanvasType.Dynamic || SetOrCreateCanvas == SetOrCreateCanvasType.Both)
-                dynamicCanvas = CreateOnlyCanvas(CanvasType.Dymanic, "Dynamic");
+                dynamicCanvas = CanvasObjectInit(CanvasType.Dymanic, "Dynamic");
 
             //作成済みのStaticCanvasを使う場合
             if (UseCreatedStaticCanvas && (SetOrCreateCanvas == SetOrCreateCanvasType.Static || SetOrCreateCanvas == SetOrCreateCanvasType.Both))
-                staticCanvas = CreateOnlyCanvas(StaticCanvas);
+                staticCanvas = CanvasObjectInit(StaticCanvas);
             else if (SetOrCreateCanvas == SetOrCreateCanvasType.Static || SetOrCreateCanvas == SetOrCreateCanvasType.Both)
-                staticCanvas = CreateOnlyCanvas(CanvasType.Static, "Static");
+                staticCanvas = CanvasObjectInit(CanvasType.Static, "Static");
 
             //オリジナルCanvas初期化
             //作成済みのOtherCanvasを使う場合
@@ -69,14 +69,14 @@ namespace UIKit
             {
                 foreach (var _ in OtherCanvas.Select((Value, Index) => new { Value, Index }))
                 {
-                    otherCanvas[_.Index] = CreateOnlyCanvas(_.Value);
+                    otherCanvas[_.Index] = CanvasObjectInit(_.Value);
                 }
             }
             else
             {
                 foreach (var _ in OtherCanvas.Select((Value, Index) => new { Value, Index }))
                 {
-                    otherCanvas[_.Index] = CreateOnlyCanvas(CanvasType.Dymanic, _.Value.transform.name);
+                    otherCanvas[_.Index] = CanvasObjectInit(CanvasType.Dymanic, _.Value.transform.name);
                 }
             }
             //Stockに代入
@@ -85,14 +85,14 @@ namespace UIKit
         }
 
         //キャンバス生成
-        private static CanvasObject CreateOnlyCanvas(Canvas canvas)
+        private static CanvasObject CanvasObjectInit(Canvas canvas)
         {
             CanvasObject canvasObject = new CanvasObject();
             canvasObject.Init(canvas);
             return canvasObject;
         }
 
-        private static CanvasObject CreateOnlyCanvas(CanvasType type, string name)
+        private static CanvasObject CanvasObjectInit(CanvasType type, string name)
         {
             CanvasObject canvasObject = new CanvasObject();
             canvasObject.Init(type, name);
@@ -114,7 +114,7 @@ namespace UIKit
         }
     }
 
-    #if UNITY_EDITOR
+#if UNITY_EDITOR
     [CustomEditor(typeof(UIKitManager))]
     public class UIKitManagerEditor : Editor
     {
@@ -138,7 +138,7 @@ namespace UIKit
 
             //Dynamic Canvas Field
             if (_target.SetOrCreateCanvas == SetOrCreateCanvasType.Dynamic ||
-                _target.SetOrCreateCanvas == SetOrCreateCanvasType.Both) 
+                _target.SetOrCreateCanvas == SetOrCreateCanvasType.Both)
             {
                 _target.UseCreatedDynamicCanvas = EditorGUILayout.ToggleLeft("Use Created Dynamic Canvas", _target.UseCreatedDynamicCanvas);
                 if (_target.UseCreatedDynamicCanvas)
@@ -185,5 +185,5 @@ namespace UIKit
             }
         }
     }
-    #endif
+#endif
 }
