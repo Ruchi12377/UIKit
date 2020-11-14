@@ -3,20 +3,21 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System;
 using System.Collections.Generic;
+// ReSharper disable InvertIf
 
 namespace UIKit
 {
     public struct CanvasObject
     {
-        public Canvas canvas;
-        public CanvasScaler canvasScaler;
-        public GraphicRaycaster graphicRaycaster;
+        public Canvas Canvas;
+        public CanvasScaler CanvasScaler;
+        public GraphicRaycaster GraphicRaycaster;
 
         public CanvasObject(Canvas c, CanvasScaler cs, GraphicRaycaster gr)
         {
-            canvas = c;
-            canvasScaler = cs;
-            graphicRaycaster = gr;
+            Canvas = c;
+            CanvasScaler = cs;
+            GraphicRaycaster = gr;
         }
 
         //Canvasの生成&代入
@@ -33,9 +34,9 @@ namespace UIKit
             {
                 co = new CanvasObject
                 {
-                    canvas = canvas,
-                    canvasScaler = canvas.gameObject.GetComponent<CanvasScaler>(),
-                    graphicRaycaster = canvas.gameObject.GetComponent<GraphicRaycaster>()
+                    Canvas = canvas,
+                    CanvasScaler = canvas.gameObject.GetComponent<CanvasScaler>(),
+                    GraphicRaycaster = canvas.gameObject.GetComponent<GraphicRaycaster>()
                 };
             }
             catch
@@ -48,13 +49,13 @@ namespace UIKit
 
     public struct EventSystemObject
     {
-        public EventSystem eventSystem;
-        public StandaloneInputModule standaloneInputModule;
+        public readonly EventSystem EventSystem;
+        public StandaloneInputModule StandaloneInputModule;
 
         public EventSystemObject(EventSystem es, StandaloneInputModule sim)
         {
-            eventSystem = es;
-            standaloneInputModule = sim;
+            EventSystem = es;
+            StandaloneInputModule = sim;
         }
 
         //EventSystemの生成&代入
@@ -64,25 +65,34 @@ namespace UIKit
         }
     }
 
-    public struct CanvasStock
+    public readonly struct CanvasStock
     {
-        private EventSystemObject EventSystem;
-        private CanvasObject DynamicCanvas;
-        private CanvasObject StaticCanvas;
-        private List<CanvasObject> OtherCanvas;
+        private readonly EventSystemObject _eventSystem;
+        private readonly CanvasObject _dynamicCanvas;
+        private readonly CanvasObject _staticCanvas;
+        private readonly List<CanvasObject> _otherCanvas;
 
-        public CanvasStock(EventSystemObject eso, CanvasObject dc, CanvasObject sc, int Capacity)
+        public CanvasStock(EventSystemObject eso, CanvasObject dc, CanvasObject sc, int capacity)
         {
-            EventSystem = eso;
-            DynamicCanvas = dc;
-            StaticCanvas = sc;
+            _eventSystem = eso;
+            _dynamicCanvas = dc;
+            _staticCanvas = sc;
 
-            OtherCanvas = new List<CanvasObject>(Capacity);
+            _otherCanvas = new List<CanvasObject>(capacity);
+        }
+        
+        public CanvasStock(EventSystemObject eso, CanvasObject dc, CanvasObject sc,List<CanvasObject> oc)
+        {
+            _eventSystem = eso;
+            _dynamicCanvas = dc;
+            _staticCanvas = sc;
+
+            _otherCanvas = oc;
         }
 
         public Canvas GetDynamicCanvas()
         {
-            Canvas _ = DynamicCanvas.canvas;
+            var _ = _dynamicCanvas.Canvas;
             if (_ == null)
             {
                 try
@@ -98,11 +108,11 @@ namespace UIKit
             return _;
         }
 
-        public Canvas TryGetDynamicCanvas() => DynamicCanvas.canvas;
+        public Canvas TryGetDynamicCanvas() => _dynamicCanvas.Canvas;
 
         public Canvas GetStaticCanvas()
         {
-            Canvas _ = StaticCanvas.canvas;
+            var _ = _staticCanvas.Canvas;
             if (_ == null)
             {
                 try
@@ -118,11 +128,11 @@ namespace UIKit
             return _;
         }
 
-        public Canvas TryGetStaticCanvas() => StaticCanvas.canvas;
+        public Canvas TryGetStaticCanvas() => _staticCanvas.Canvas;
 
         public EventSystem GetEventSystem()
         {
-            EventSystem _ = EventSystem.eventSystem;
+            var _ = _eventSystem.EventSystem;
             if (_ == null)
             {
                 try
@@ -138,18 +148,18 @@ namespace UIKit
             return _;
         }
 
-        public EventSystem TryGetEventSystem() => EventSystem.eventSystem;
+        public EventSystem TryGetEventSystem() => _eventSystem.EventSystem;
 
-        //OtheCanvas追加用
+        //OtherCanvas追加用
         public void AddCanvas(CanvasObject canvasObject)
         {
-            OtherCanvas.Add(canvasObject);
+            _otherCanvas.Add(canvasObject);
         }
 
         public CanvasObject AddCanvas(CanvasType type, string name)
         {
-            CanvasObject co = Creator.CreateCanvas(type, name);
-            OtherCanvas.Add(co);
+            var co = Creator.CreateCanvas(type, name);
+            _otherCanvas.Add(co);
             return co;
         }
     }
@@ -157,13 +167,13 @@ namespace UIKit
     [Serializable]
     public struct Childs
     {
-        public int Nest;
+        public int nest;
         public Transform transform;
     }
 
     public enum CanvasType
     {
-        Dymanic,
+        Dynamic,
         Static
     };
 

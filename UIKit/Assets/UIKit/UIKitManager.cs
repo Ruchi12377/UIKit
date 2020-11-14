@@ -6,109 +6,102 @@ using System.Collections.Generic;
 
 namespace UIKit
 {
-    public sealed class UIKitManager : Singleton<UIKitManager>
+    public sealed class UIKitManager : MonoBehaviour
     {
-        public SetOrCreateCanvasType SetOrCreateCanvas = SetOrCreateCanvasType.Both;
+        public SetOrCreateCanvasType setOrCreateCanvas = SetOrCreateCanvasType.Both;
 
         //作成済みのCanvasを使うか
-        public bool UseCreatedDynamicCanvas = false;
-        public bool UseCreatedStaticCanvas = false;
-        public bool UseCreatedOtherCanvas = false;
+        [NonEditableInPlay]
+        public bool useCreatedDynamicCanvas;
+        [NonEditableInPlay]
+        public bool useCreatedStaticCanvas;
+        [NonEditableInPlay]
+        public bool useCreatedOtherCanvas;
 
         //使う際に設定するフィールド
-        public Canvas DynamicCanvas = null;
-        public Canvas StaticCanvas = null;
-        public List<Canvas> OtherCanvas = new List<Canvas>();
+        [NonEditableInPlay]
+        public Canvas dynamicCanvas;
+        [NonEditableInPlay]
+        public Canvas staticCanvas;
+        [NonEditableInPlay]
+        public List<Canvas> otherCanvas = new List<Canvas>();
 
         public static CanvasStock Stock { get; private set; }
 
         private void Awake()
         {
+            DontDestroyOnLoad(gameObject);
             //名前の設定
             gameObject.name = "UI_Kit";
 
             //Creator初期化
             Creator.Init();
 
-            GameObject go = GameObject.Find("EventSystem");
-            EventSystem es = go?.GetComponent<EventSystem>();
-            EventSystemObject eventSystemObject = new EventSystemObject(es, null);
+            var go = GameObject.Find("EventSystem");
+            var es = go != null ? go.GetComponent<EventSystem>() : null;
+            var eventSystemObject = new EventSystemObject(es, null);
             //EventStyleがないなら
-            if (eventSystemObject.eventSystem == null)
+            if (eventSystemObject.EventSystem == null)
             {
                 //EventSystem初期化
                 eventSystemObject.Init();
             }
             else
             {
-                eventSystemObject.standaloneInputModule = go.GetComponent<StandaloneInputModule>();
+                eventSystemObject.StandaloneInputModule = go.GetComponent<StandaloneInputModule>();
             }
 
             //Canvas
-            CanvasObject dynamicCanvas = default;
-            CanvasObject staticCanvas = default;
+            CanvasObject useDynamicCanvas = default;
+            CanvasObject useStaticCanvas = default;
             //オリジナルCanvas
-            List<CanvasObject> otherCanvas = new List<CanvasObject>(OtherCanvas.Count);
+            var useOtherCanvas = new List<CanvasObject>(otherCanvas.Count);
 
             //Canvas初期化
             //作成済みのDynamicCanvasを使う場合
-            if (UseCreatedDynamicCanvas && (SetOrCreateCanvas == SetOrCreateCanvasType.Dynamic || SetOrCreateCanvas == SetOrCreateCanvasType.Both))
-                dynamicCanvas = CanvasObjectInit(DynamicCanvas);
-            else if (SetOrCreateCanvas == SetOrCreateCanvasType.Dynamic || SetOrCreateCanvas == SetOrCreateCanvasType.Both)
-                dynamicCanvas = CanvasObjectInit(CanvasType.Dymanic, "Dynamic");
+            if (useCreatedDynamicCanvas && (setOrCreateCanvas == SetOrCreateCanvasType.Dynamic || setOrCreateCanvas == SetOrCreateCanvasType.Both))
+                useDynamicCanvas = CanvasObjectInit(this.dynamicCanvas);
+            else if (setOrCreateCanvas == SetOrCreateCanvasType.Dynamic || setOrCreateCanvas == SetOrCreateCanvasType.Both)
+                useDynamicCanvas = CanvasObjectInit(CanvasType.Dynamic, "Dynamic");
 
             //作成済みのStaticCanvasを使う場合
-            if (UseCreatedStaticCanvas && (SetOrCreateCanvas == SetOrCreateCanvasType.Static || SetOrCreateCanvas == SetOrCreateCanvasType.Both))
-                staticCanvas = CanvasObjectInit(StaticCanvas);
-            else if (SetOrCreateCanvas == SetOrCreateCanvasType.Static || SetOrCreateCanvas == SetOrCreateCanvasType.Both)
-                staticCanvas = CanvasObjectInit(CanvasType.Static, "Static");
+            if (useCreatedStaticCanvas && (setOrCreateCanvas == SetOrCreateCanvasType.Static || setOrCreateCanvas == SetOrCreateCanvasType.Both))
+                useStaticCanvas = CanvasObjectInit(this.staticCanvas);
+            else if (setOrCreateCanvas == SetOrCreateCanvasType.Static || setOrCreateCanvas == SetOrCreateCanvasType.Both)
+                useStaticCanvas = CanvasObjectInit(CanvasType.Static, "Static");
 
             //オリジナルCanvas初期化
             //作成済みのOtherCanvasを使う場合
-            if (UseCreatedOtherCanvas)
+            if (useCreatedOtherCanvas)
             {
-                foreach (var _ in OtherCanvas.Select((Value, Index) => new { Value, Index }))
+                foreach (var _ in otherCanvas.Select((value, index) => new { Value = value, Index = index }))
                 {
-                    otherCanvas[_.Index] = CanvasObjectInit(_.Value);
+                    useOtherCanvas[_.Index] = CanvasObjectInit(_.Value);
                 }
             }
             else
             {
-                foreach (var _ in OtherCanvas.Select((Value, Index) => new { Value, Index }))
+                foreach (var _ in otherCanvas.Select((value, index) => new { Value = value, Index = index }))
                 {
-                    otherCanvas[_.Index] = CanvasObjectInit(CanvasType.Dymanic, _.Value.transform.name);
+                    useOtherCanvas[_.Index] = CanvasObjectInit(CanvasType.Dynamic, _.Value.transform.name);
                 }
             }
             //Stockに代入
-            CanvasStock canvasStock = new CanvasStock(eventSystemObject, dynamicCanvas, staticCanvas, 0);
+            var canvasStock = new CanvasStock(eventSystemObject, useDynamicCanvas, useStaticCanvas, useOtherCanvas);
             Stock = canvasStock;
         }
 
         //キャンバス生成
         private static CanvasObject CanvasObjectInit(Canvas canvas)
         {
-            CanvasObject canvasObject = new CanvasObject();
+            var canvasObject = new CanvasObject();
             canvasObject.Init(canvas);
             return canvasObject;
         }
 
         private static CanvasObject CanvasObjectInit(CanvasType type, string name)
         {
-            CanvasObject canvasObject = new CanvasObject();
-            canvasObject.Init(type, name);
-            return canvasObject;
-        }
-
-        public static CanvasObject CreateCanvas(Canvas canvas)
-        {
-            CanvasObject canvasObject = new CanvasObject();
-            canvasObject.Init(canvas);
-            return canvasObject;
-        }
-
-        public static CanvasObject CreateCanvas(CanvasType type, string name)
-        {
-            CanvasObject canvasObject = new CanvasObject();
+            var canvasObject = new CanvasObject();
             canvasObject.Init(type, name);
             return canvasObject;
         }
@@ -134,45 +127,45 @@ namespace UIKit
             EditorGUILayout.ObjectField("Script", MonoScript.FromMonoBehaviour((MonoBehaviour)target), typeof(MonoScript), false);
             EditorGUI.EndDisabledGroup();
 
-            _target.SetOrCreateCanvas = (SetOrCreateCanvasType)EditorGUILayout.EnumPopup("SetOrCreateCanvas", _target.SetOrCreateCanvas);
+            _target.setOrCreateCanvas = (SetOrCreateCanvasType)EditorGUILayout.EnumPopup("SetOrCreateCanvas", _target.setOrCreateCanvas);
 
             //Dynamic Canvas Field
-            if (_target.SetOrCreateCanvas == SetOrCreateCanvasType.Dynamic ||
-                _target.SetOrCreateCanvas == SetOrCreateCanvasType.Both)
+            if (_target.setOrCreateCanvas == SetOrCreateCanvasType.Dynamic ||
+                _target.setOrCreateCanvas == SetOrCreateCanvasType.Both)
             {
-                _target.UseCreatedDynamicCanvas = EditorGUILayout.ToggleLeft("Use Created Dynamic Canvas", _target.UseCreatedDynamicCanvas);
-                if (_target.UseCreatedDynamicCanvas)
+                _target.useCreatedDynamicCanvas = EditorGUILayout.ToggleLeft("Use Created Dynamic Canvas", _target.useCreatedDynamicCanvas);
+                if (_target.useCreatedDynamicCanvas)
                 {
                     EditorGUILayout.LabelField("Target Canvas Obejct");
-                    _target.DynamicCanvas = EditorGUILayout.ObjectField("DynamicCanvas", _target.DynamicCanvas, typeof(Canvas), true) as Canvas;
+                    _target.dynamicCanvas = EditorGUILayout.ObjectField("DynamicCanvas", _target.dynamicCanvas, typeof(Canvas), true) as Canvas;
                 }
             }
 
             //Static Canvas Field
-            if (_target.SetOrCreateCanvas == SetOrCreateCanvasType.Static ||
-                _target.SetOrCreateCanvas == SetOrCreateCanvasType.Both)
+            if (_target.setOrCreateCanvas == SetOrCreateCanvasType.Static ||
+                _target.setOrCreateCanvas == SetOrCreateCanvasType.Both)
             {
-                _target.UseCreatedStaticCanvas = EditorGUILayout.ToggleLeft("Use Created Static Canvas", _target.UseCreatedStaticCanvas);
+                _target.useCreatedStaticCanvas = EditorGUILayout.ToggleLeft("Use Created Static Canvas", _target.useCreatedStaticCanvas);
 
-                if (_target.UseCreatedStaticCanvas)
+                if (_target.useCreatedStaticCanvas)
                 {
                     EditorGUILayout.LabelField("Target Canvas Obejct");
-                    _target.StaticCanvas = EditorGUILayout.ObjectField("StaticCanvas", _target.StaticCanvas, typeof(Canvas), true) as Canvas;
+                    _target.staticCanvas = EditorGUILayout.ObjectField("StaticCanvas", _target.staticCanvas, typeof(Canvas), true) as Canvas;
                 }
             }
 
             //Other Canvas Fields
-            _target.UseCreatedOtherCanvas = EditorGUILayout.ToggleLeft("Use Created Other Canvas", _target.UseCreatedOtherCanvas);
+            _target.useCreatedOtherCanvas = EditorGUILayout.ToggleLeft("Use Created Other Canvas", _target.useCreatedOtherCanvas);
 
-            if (_target.UseCreatedOtherCanvas)
+            if (_target.useCreatedOtherCanvas)
             {
                 EditorGUILayout.LabelField("Target Canvas Obejcts");
-                List<Canvas> list = _target.OtherCanvas;
-                int newCount = Mathf.Max(0, EditorGUILayout.IntField("size", list.Count));
+                var list = _target.otherCanvas;
+                var newCount = Mathf.Max(0, EditorGUILayout.IntField("size", list.Count));
                 while (newCount < list.Count) list.RemoveAt(list.Count - 1);
                 while (newCount > list.Count) list.Add(null);
 
-                for (int i = 0; i < list.Count; i++)
+                for (var i = 0; i < list.Count; i++)
                 {
                     list[i] = EditorGUILayout.ObjectField("DynamicCanvas", list[i], typeof(Canvas), true) as Canvas;
                 }
