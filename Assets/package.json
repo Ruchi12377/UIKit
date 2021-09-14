@@ -1,0 +1,17 @@
+{
+    "name": "com.ruchi.uikit",
+    "displayName": "UIKit",
+    "version": "1.0.0",
+    "unity": "2020.7",
+    "description": "A package that allows you to create a Unity uGUI from a script",
+    "keywords": [
+        "UI"
+    ],
+    "category": "",
+    "dependencies": {},
+    "author": {
+        "name": "Unity",
+        "email": "unity@example.com",
+        "url": "https://www.unity3d.com"
+    }
+}
